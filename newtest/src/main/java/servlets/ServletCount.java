@@ -20,19 +20,21 @@ public class ServletCount extends HttpServlet {
        try {
            Class.forName("org.postgresql.Driver");
            Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-           Statement statement = connection.createStatement();
-           String sql = "SELECT * FROM tableforcount";
+           Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+           String sql = "SELECT webcount FROM tableforcount";
            ResultSet result = statement.executeQuery(sql);
-           response.setContentType("text/html; charset=utf-8");
-           while(result.next()) {
-               int count = result.getInt("webcount") + 1;
-               request.setAttribute("count", count);
-               request.getRequestDispatcher("WEB-INF/jsp/PageCount.jsp").forward(request, response);
-               String sqlUpdate = "UPDATE tableforcount SET webcount = " + count + "";
-               int numberRow = statement.executeUpdate(sqlUpdate);
-           }
+           result.first();
+           int count = result.getInt("webcount") + 1;
+           //Для проверки
+           System.out.println(count);
+           request.setAttribute("count", count);
+           request.getRequestDispatcher("WEB-INF/jsp/PageCount.jsp").forward(request, response);
            result.close();
            statement.close();
+           Statement newStatement = connection.createStatement();
+           String sqlUpdate = "UPDATE tableforcount SET webcount = " + count + "";
+           int numberRow = newStatement.executeUpdate(sqlUpdate);
+           newStatement.close();
            connection.close();
        } catch (SQLException e) {
             e.printStackTrace();
