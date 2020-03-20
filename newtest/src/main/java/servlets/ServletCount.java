@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.*;
 
-@WebServlet("/")
+@WebServlet("/count")
 public class ServletCount extends HttpServlet {
 
     private static final String DB_USER = "test";
